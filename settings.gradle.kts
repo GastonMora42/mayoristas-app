@@ -1,3 +1,4 @@
+
 pluginManagement {
     repositories {
         google()
@@ -14,6 +15,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Mayoristas"
+ect.name = "Mayoristas"
 
 include(":app")
 
