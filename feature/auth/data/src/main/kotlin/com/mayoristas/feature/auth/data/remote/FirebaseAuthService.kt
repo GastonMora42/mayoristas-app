@@ -24,7 +24,6 @@ class FirebaseAuthService @Inject constructor(
             
             val firebaseUser = result.user ?: return Result.Error(Exception("Usuario no encontrado"))
             
-            // Obtener datos adicionales del perfil desde Firestore
             val userProfile = getUserProfile(firebaseUser.uid)
             
             val user = User(
@@ -45,7 +44,6 @@ class FirebaseAuthService @Inject constructor(
     
     suspend fun register(credentials: RegisterCredentials): Result<User> {
         return try {
-            // 1. Crear usuario en Firebase Auth
             val result = firebaseAuth.createUserWithEmailAndPassword(
                 credentials.email,
                 credentials.password
@@ -53,16 +51,13 @@ class FirebaseAuthService @Inject constructor(
             
             val firebaseUser = result.user ?: return Result.Error(Exception("Error al crear usuario"))
             
-            // 2. Actualizar display name
             val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
                 .setDisplayName(credentials.displayName)
                 .build()
             firebaseUser.updateProfile(profileUpdates).await()
             
-            // 3. Guardar datos adicionales en Firestore
             saveUserProfile(firebaseUser.uid, credentials)
             
-            // 4. Enviar email de verificación
             firebaseUser.sendEmailVerification().await()
             
             val user = User(
@@ -81,31 +76,10 @@ class FirebaseAuthService @Inject constructor(
         }
     }
     
-    suspend fun loginWithGoogle(idToken: String): Result<User> {
+    suspend fun sendPasswordResetEmail(email: String): Result<Unit> {
         return try {
-            val credential = GoogleAuthProvider.getCredential(idToken, null)
-            val result = firebaseAuth.signInWithCredential(credential).await()
-            
-            val firebaseUser = result.user ?: return Result.Error(Exception("Error con Google Auth"))
-            
-            // Si es nuevo usuario, necesita completar perfil B2B
-            val userProfile = getUserProfile(firebaseUser.uid)
-            if (userProfile == null && result.additionalUserInfo?.isNewUser == true) {
-                // Redirigir a completar perfil empresarial
-                return Result.Error(Exception("COMPLETE_PROFILE_REQUIRED"))
-            }
-            
-            val user = User(
-                id = firebaseUser.uid,
-                email = firebaseUser.email ?: "",
-                displayName = firebaseUser.displayName,
-                userType = userProfile?.userType ?: UserType.CLIENT,
-                isVerified = firebaseUser.isEmailVerified,
-                profile = userProfile?.profile,
-                createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
-            )
-            
-            Result.Success(user)
+            firebaseAuth.sendPasswordResetEmail(email).await()
+            Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e)
         }
@@ -133,7 +107,6 @@ class FirebaseAuthService @Inject constructor(
     }
 }
 
-// Modelo para Firestore
 data class UserProfileData(
     val userType: UserType = UserType.CLIENT,
     val profile: UserProfile? = null

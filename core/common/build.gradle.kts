@@ -7,10 +7,10 @@ plugins {
 
 android {
     namespace = "com.mayoristas.core.common"
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk = 34
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
+        minSdk = 24
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -29,6 +29,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    
+    // Security & Storage
+    implementation(libs.security.crypto)
+    implementation(libs.datastore.preferences)
     
     testImplementation(libs.junit)
 }

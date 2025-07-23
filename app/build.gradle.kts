@@ -67,7 +67,7 @@ dependencies {
     // Core modules
     implementation(project(":core:common"))
     
-    // Feature modules - Only auth for now
+    // Feature modules
     implementation(project(":feature:auth:domain"))
 
     // Core Android
