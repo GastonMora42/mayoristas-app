@@ -2,9 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
-    id("kotlin-parcelize")
 }
 
 android {
@@ -64,6 +64,12 @@ android {
 }
 
 dependencies {
+    // Core modules
+    implementation(project(":core:common"))
+    
+    // Feature modules - Only auth for now
+    implementation(project(":feature:auth:domain"))
+
     // Core Android
     implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.runtime)

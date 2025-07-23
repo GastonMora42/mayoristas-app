@@ -1,24 +1,27 @@
 [versions]
 kotlin = "1.9.10"
-compose = "2023.10.01"
+compose-bom = "2023.10.01"
 compose-compiler = "1.5.4"
 hilt = "2.48"
 lifecycle = "2.7.0"
 navigation = "2.7.4"
 coroutines = "1.7.3"
-firebase = "32.3.1"
+firebase-bom = "32.7.0"
 agp = "8.1.2"
 compileSdk = "34"
 targetSdk = "34"
 minSdk = "24"
+room = "2.6.0"
+retrofit = "2.9.0"
+okhttp = "4.12.0"
 
 [libraries]
 # Compose BOM
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose" }
-androidx-compose-ui = { group = "androidx.compose", name = "compose-ui" }
-androidx-compose-ui-tooling = { group = "androidx.compose", name = "compose-ui-tooling" }
-androidx-compose-ui-tooling-preview = { group = "androidx.compose", name = "compose-ui-tooling-preview" }
-androidx-compose-material3 = { group = "androidx.compose", name = "compose-material3" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-activity = { group = "androidx.activity", name = "activity-compose", version = "1.8.0" }
 androidx-compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
@@ -38,20 +41,43 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
 # Firebase
-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
+
+# Room Database
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Network
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+# Security & Storage
+security-crypto = { group = "androidx.security", name = "security-crypto", version = "1.1.0-alpha06" }
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version = "1.0.0" }
+
+# Biometric
+biometric = { group = "androidx.biometric", name = "biometric", version = "1.1.0" }
+
+# Image Loading
+coil = { group = "io.coil-kt", name = "coil-compose", version = "2.5.0" }
 
 # Testing
 junit = { group = "junit", name = "junit", version = "4.13.2" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version = "1.1.5" }
 androidx-test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version = "3.5.1" }
+mockk = { group = "io.mockk", name = "mockk", version = "1.13.8" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-google-services = { id = "com.google.gms.google-services", version = "4.3.15" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.0" }

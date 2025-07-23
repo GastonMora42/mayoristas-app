@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.datastore.preferences)
     implementation(libs.security.crypto)
+    implementation(libs.biometric)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     

@@ -1,4 +1,3 @@
-
 pluginManagement {
     repositories {
         google()
@@ -15,7 +14,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Mayoristas"
-ect.name = "Mayoristas"
 
 include(":app")
 
@@ -25,19 +23,7 @@ include(":core:network")
 include(":core:database")
 include(":core:ui")
 
-// Feature modules
+// Feature modules - Auth only for now
 include(":feature:auth:domain")
 include(":feature:auth:data")
 include(":feature:auth:presentation")
-
-include(":feature:seller-ecosystem:domain")
-include(":feature:seller-ecosystem:data")
-include(":feature:seller-ecosystem:presentation")
-
-include(":feature:client-ecosystem:domain")
-include(":feature:client-ecosystem:data")
-include(":feature:client-ecosystem:presentation")
-
-include(":feature:subscriptions:domain")
-include(":feature:subscriptions:data")
-include(":feature:subscriptions:presentation")
