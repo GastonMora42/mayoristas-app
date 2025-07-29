@@ -17,5 +17,3 @@ dependencyResolutionManagement {
 rootProject.name = "Mayoristas"
 
 include(":app")
-// Temporalmente deshabilitamos otros módulos hasta que funcione
-// include(":core:common")
