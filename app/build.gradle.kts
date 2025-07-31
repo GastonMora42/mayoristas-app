@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.google.services)
+    alias(libs.plugins.google.services) // ✅ FIREBASE HABILITADO
 }
 
 android {
@@ -12,7 +12,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.mayoristas.app"
+        applicationId = "com.mayoristas.app" // ✅ MISMO PACKAGE PARA DEBUG Y RELEASE
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -29,9 +29,11 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
+            // ✅ SIN applicationIdSuffix - Usa el mismo package que Firebase
+            versionNameSuffix = "-debug"
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -70,6 +72,7 @@ dependencies {
     // Core Android
     implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel)
 
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
@@ -77,21 +80,32 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.activity)
+    implementation(libs.androidx.compose.lifecycle)
+    implementation(libs.androidx.compose.navigation)
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
     kapt(libs.hilt.compiler)
     
-    // Firebase
+    // 🔥 FIREBASE - TOTALMENTE HABILITADO
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.androidx.test.espresso)
     androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    
+    // Debug tools
     debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

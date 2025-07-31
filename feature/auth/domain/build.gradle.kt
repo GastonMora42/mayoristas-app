@@ -7,10 +7,10 @@ plugins {
 
 android {
     namespace = "com.mayoristas.feature.auth.domain"
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk = 34
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
+        minSdk = 24
         consumerProguardFiles("consumer-rules.pro")
     }
 

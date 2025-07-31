@@ -7,10 +7,10 @@ plugins {
 
 android {
     namespace = "com.mayoristas.core.ui"
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk = 34
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
+        minSdk = 24
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -28,7 +28,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 }
 

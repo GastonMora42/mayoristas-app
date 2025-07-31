@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">Mayoristas.com</string>
+    <string name="app_name">Mayoristas</string>
+    <string name="firebase_connected">Firebase conectado</string>
+    <string name="firebase_connecting">Conectando a Firebase...</string>
+    <string name="ready_for_auth">Listo para autenticación</string>
 </resources>

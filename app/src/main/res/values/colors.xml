@@ -1,5 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Material Design 3 Light Theme Colors -->
+    <color name="md_theme_light_primary">#1976D2</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#E3F2FD</color>
+    <color name="md_theme_light_onPrimaryContainer">#0D47A1</color>
+    
+    <color name="md_theme_light_secondary">#4CAF50</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_secondaryContainer">#E8F5E8</color>
+    <color name="md_theme_light_onSecondaryContainer">#1B5E20</color>
+    
+    <color name="md_theme_light_tertiary">#FF9800</color>
+    <color name="md_theme_light_onTertiary">#FFFFFF</color>
+    <color name="md_theme_light_tertiaryContainer">#FFF3E0</color>
+    <color name="md_theme_light_onTertiaryContainer">#E65100</color>
+    
+    <color name="md_theme_light_error">#D32F2F</color>
+    <color name="md_theme_light_errorContainer">#FFEBEE</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_onErrorContainer">#B71C1C</color>
+    
+    <color name="md_theme_light_background">#FAFAFA</color>
+    <color name="md_theme_light_onBackground">#212121</color>
+    
+    <color name="md_theme_light_surface">#FFFFFF</color>
+    <color name="md_theme_light_onSurface">#212121</color>
+    <color name="md_theme_light_surfaceVariant">#F5F5F5</color>
+    <color name="md_theme_light_onSurfaceVariant">#616161</color>
+    
+    <color name="md_theme_light_outline">#BDBDBD</color>
+    <color name="md_theme_light_inverseOnSurface">#FAFAFA</color>
+    <color name="md_theme_light_inverseSurface">#303030</color>
+    <color name="md_theme_light_inversePrimary">#64B5F6</color>
+    
+    <!-- Dark theme colors (for future implementation) -->
+    <color name="md_theme_dark_primary">#64B5F6</color>
+    <color name="md_theme_dark_onPrimary">#0D47A1</color>
+    <color name="md_theme_dark_primaryContainer">#1565C0</color>
+    <color name="md_theme_dark_onPrimaryContainer">#E3F2FD</color>
+    
+    <!-- Common colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Success colors for business app -->
+    <color name="success">#4CAF50</color>
+    <color name="success_container">#E8F5E8</color>
+    <color name="on_success">#FFFFFF</color>
+    <color name="on_success_container">#1B5E20</color>
+    
+    <!-- Warning colors -->
+    <color name="warning">#FF9800</color>
+    <color name="warning_container">#FFF3E0</color>
+    <color name="on_warning">#FFFFFF</color>
+    <color name="on_warning_container">#E65100</color>
+    
+    <!-- Info colors -->
+    <color name="info">#2196F3</color>
+    <color name="info_container">#E1F5FE</color>
+    <color name="on_info">#FFFFFF</color>
+    <color name="on_info_container">#0D47A1</color>
 </resources>
