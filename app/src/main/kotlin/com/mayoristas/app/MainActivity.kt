@@ -243,7 +243,7 @@ private fun ServiceStatusItem(name: String, isConnected: Boolean?) {
                 modifier = Modifier.size(16.dp)
             )
             false -> Icon(
-                Icons.Default.Error, // ✅ CAMBIADO: Cancel → Error
+                Icons.Default.Clear,
                 contentDescription = "Disconnected", 
                 tint = Color(0xFFD32F2F), // red
                 modifier = Modifier.size(16.dp)
