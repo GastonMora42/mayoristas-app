@@ -37,10 +37,12 @@ object AuthModule {
     fun provideAuthRepository(
         firebaseAuthService: FirebaseAuthService,
         biometricManager: BiometricAuthManager,
-        tokenManager: SecureTokenManager
+        tokenManager: SecureTokenManager,
+        firebaseAuth: FirebaseAuth
     ): AuthRepository = AuthRepositoryImpl(
         firebaseAuthService,
         biometricManager,
-        tokenManager
+        tokenManager,
+        firebaseAuth
     )
 }

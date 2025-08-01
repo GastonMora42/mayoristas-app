@@ -29,7 +29,6 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
-            // ✅ SIN applicationIdSuffix - Usa el mismo package que Firebase
             versionNameSuffix = "-debug"
         }
         release {
@@ -97,6 +96,10 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+
+    // Security & Storage (para funcionalidad básica de auth)
+    implementation(libs.security.crypto)
+    implementation(libs.datastore.preferences)
 
     // Testing
     testImplementation(libs.junit)

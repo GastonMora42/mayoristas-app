@@ -81,6 +81,7 @@ class AuthViewModel @Inject constructor(
         
         viewModelScope.launch {
             _loginState.value = currentState.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(authState = AuthState.Loading)
             
             val result = loginUseCase(
                 LoginCredentials(
@@ -101,9 +102,13 @@ class AuthViewModel @Inject constructor(
                         isLoading = false,
                         error = result.exception.message
                     )
+                    _uiState.value = _uiState.value.copy(
+                        authState = AuthState.Error(result.exception.message ?: "Error desconocido")
+                    )
                 }
                 else -> {
                     _loginState.value = currentState.copy(isLoading = false)
+                    _uiState.value = _uiState.value.copy(authState = AuthState.Initial)
                 }
             }
         }
@@ -187,6 +192,7 @@ class AuthViewModel @Inject constructor(
         
         viewModelScope.launch {
             _registerState.value = currentState.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(authState = AuthState.Loading)
             
             val result = registerUseCase(
                 RegisterCredentials(
@@ -211,9 +217,40 @@ class AuthViewModel @Inject constructor(
                         isLoading = false,
                         error = result.exception.message
                     )
+                    _uiState.value = _uiState.value.copy(
+                        authState = AuthState.Error(result.exception.message ?: "Error desconocido")
+                    )
                 }
                 else -> {
                     _registerState.value = currentState.copy(isLoading = false)
+                    _uiState.value = _uiState.value.copy(authState = AuthState.Initial)
+                }
+            }
+        }
+    }
+    
+    // === LOGOUT ===
+    fun logout() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            val result = authRepository.logout()
+            
+            when (result) {
+                is Result.Success -> {
+                    // Reset all states
+                    _loginState.value = LoginState()
+                    _registerState.value = RegisterState()
+                    _uiState.value = AuthUIState(authState = AuthState.Initial)
+                }
+                is Result.Error -> {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = result.exception.message
+                    )
+                }
+                else -> {
+                    _uiState.value = _uiState.value.copy(isLoading = false)
                 }
             }
         }
@@ -222,7 +259,10 @@ class AuthViewModel @Inject constructor(
     // === BIOMETRIC AUTH ===
     fun loginWithBiometric() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                authState = AuthState.Loading
+            )
             
             val result = biometricAuthUseCase()
             
@@ -236,11 +276,15 @@ class AuthViewModel @Inject constructor(
                 is Result.Error -> {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = result.exception.message
+                        error = result.exception.message,
+                        authState = AuthState.Error(result.exception.message ?: "Error biométrico")
                     )
                 }
                 else -> {
-                    _uiState.value = _uiState.value.copy(isLoading = false)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        authState = AuthState.Initial
+                    )
                 }
             }
         }

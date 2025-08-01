@@ -24,19 +24,9 @@ class FirebaseAuthService @Inject constructor(
             
             val firebaseUser = result.user ?: return Result.Error(Exception("Usuario no encontrado"))
             
-            val userProfile = getUserProfile(firebaseUser.uid)
+            // Obtener datos completos del usuario desde Firestore
+            getCurrentUserFromFirestore(firebaseUser.uid)
             
-            val user = User(
-                id = firebaseUser.uid,
-                email = firebaseUser.email ?: "",
-                displayName = firebaseUser.displayName,
-                userType = userProfile?.userType ?: UserType.CLIENT,
-                isVerified = firebaseUser.isEmailVerified,
-                profile = userProfile?.profile,
-                createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
-            )
-            
-            Result.Success(user)
         } catch (e: Exception) {
             Result.Error(e)
         }
@@ -51,13 +41,16 @@ class FirebaseAuthService @Inject constructor(
             
             val firebaseUser = result.user ?: return Result.Error(Exception("Error al crear usuario"))
             
+            // Actualizar perfil de Firebase Auth
             val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
                 .setDisplayName(credentials.displayName)
                 .build()
             firebaseUser.updateProfile(profileUpdates).await()
             
+            // Guardar datos en Firestore
             saveUserProfile(firebaseUser.uid, credentials)
             
+            // Enviar email de verificación
             firebaseUser.sendEmailVerification().await()
             
             val user = User(
@@ -85,19 +78,66 @@ class FirebaseAuthService @Inject constructor(
         }
     }
     
-    private suspend fun getUserProfile(userId: String): UserProfileData? {
+    suspend fun getCurrentUserFromFirestore(userId: String): Result<User> {
         return try {
+            val firebaseUser = firebaseAuth.currentUser 
+                ?: return Result.Error(Exception("Usuario no autenticado"))
+            
             val doc = firestore.collection("user_profiles").document(userId).get().await()
-            doc.toObject(UserProfileData::class.java)
+            
+            if (doc.exists()) {
+                val userProfileData = doc.toObject(UserProfileData::class.java)
+                
+                val user = User(
+                    id = userId,
+                    email = firebaseUser.email ?: "",
+                    displayName = firebaseUser.displayName,
+                    userType = userProfileData?.userType ?: UserType.CLIENT,
+                    isVerified = firebaseUser.isEmailVerified,
+                    profile = userProfileData?.profile,
+                    createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
+                )
+                
+                Result.Success(user)
+            } else {
+                // Usuario en Auth pero sin perfil en Firestore
+                Result.Error(Exception("Perfil de usuario no encontrado"))
+            }
         } catch (e: Exception) {
-            null
+            Result.Error(e)
+        }
+    }
+    
+    suspend fun updateUserProfile(userId: String, profile: UserProfile): Result<User> {
+        return try {
+            val firebaseUser = firebaseAuth.currentUser 
+                ?: return Result.Error(Exception("Usuario no autenticado"))
+            
+            // Actualizar en Firestore
+            val updates = mapOf(
+                "profile" to profile,
+                "updatedAt" to System.currentTimeMillis()
+            )
+            
+            firestore.collection("user_profiles")
+                .document(userId)
+                .update(updates)
+                .await()
+            
+            // Retornar usuario actualizado
+            getCurrentUserFromFirestore(userId)
+            
+        } catch (e: Exception) {
+            Result.Error(e)
         }
     }
     
     private suspend fun saveUserProfile(userId: String, credentials: RegisterCredentials) {
         val profileData = UserProfileData(
             userType = credentials.userType,
-            profile = credentials.profile
+            profile = credentials.profile,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis()
         )
         
         firestore.collection("user_profiles")
@@ -109,5 +149,7 @@ class FirebaseAuthService @Inject constructor(
 
 data class UserProfileData(
     val userType: UserType = UserType.CLIENT,
-    val profile: UserProfile? = null
+    val profile: UserProfile? = null,
+    val createdAt: Long = 0L,
+    val updatedAt: Long = 0L
 )

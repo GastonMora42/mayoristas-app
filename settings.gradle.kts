@@ -16,17 +16,14 @@ dependencyResolutionManagement {
 
 rootProject.name = "Mayoristas"
 
-// Solo incluir el módulo principal por ahora
+// SOLO EL MÓDULO PRINCIPAL POR AHORA
 include(":app")
 
-// TEMPORALMENTE COMENTAMOS LOS OTROS MÓDULOS HASTA QUE ESTÉN FUNCIONANDO
-// Core modules
+// COMENTAMOS LOS OTROS MÓDULOS HASTA CREARLOS FÍSICAMENTE
 // include(":core:common")
 // include(":core:network") 
 // include(":core:database")
 // include(":core:ui")
-
-// Feature modules
 // include(":feature:auth:domain")
 // include(":feature:auth:data")
 // include(":feature:auth:presentation")
