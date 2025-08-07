@@ -111,4 +111,16 @@ dependencies {
     // Debug tools
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // 🚀 DEPENDENCIAS DE MÓDULOS INTERNOS DE TU PROYECTO
+    // Referencias correctas a los módulos declarados en settings.gradle.kts
+    implementation(project(":feature:auth:presentation"))
+    implementation(project(":feature:auth:domain"))
+    implementation(project(":feature:auth:data"))
+    
+    // Asumiendo que estos módulos existen para el resto de la app
+    implementation(project(":core:common"))
+    implementation(project(":core:network"))
+    implementation(project(":core:database"))
+    implementation(project(":core:ui"))
 }
