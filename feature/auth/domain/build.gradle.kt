@@ -1,36 +1,23 @@
+// ✅ Ahora es un módulo puro de Kotlin, sin dependencias de Android
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.hilt)
-}
-
-android {
-    namespace = "com.mayoristas.feature.auth.domain"
-    compileSdk = 34
-
-    defaultConfig {
-        minSdk = 24
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+    alias(libs.plugins.kotlin.jvm) // Usamos el plugin de Kotlin JVM
+    alias(libs.plugins.hilt) // Mantenemos Hilt, pero solo para su configuración básica
 }
 
 dependencies {
+    // Dependencia al módulo de common, que también debería ser puro Kotlin
     implementation(project(":core:common"))
-    
+
+    // Dependencias básicas de Kotlin y Coroutines
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.hilt.android)
+
+    // Dependencias para Hilt
+    // Solo necesitamos el compilador de Hilt aquí para procesar anotaciones,
+    // pero no el Hilt de Android, ya que este no es un módulo de Android
+    implementation(libs.hilt.android) // Nota: Esta dependencia a 'hilt.android' se mantiene si usas anotaciones como @Singleton
     kapt(libs.hilt.compiler)
     
+    // Dependencias de testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
 }
