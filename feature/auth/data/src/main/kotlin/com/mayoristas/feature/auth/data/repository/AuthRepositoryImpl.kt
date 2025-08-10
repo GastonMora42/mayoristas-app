@@ -166,7 +166,7 @@ class AuthRepositoryImpl @Inject constructor(
                     featuresEnabled = SubscriptionPlan.FREE.features
                 )
                 
-                // ✅ CREAR USER NO NULLABLE - CORREGIDO
+                // ✅ CREAR USER NO NULLABLE - LÍNEA 121 CORREGIDA
                 val basicUser = User(
                     id = firebaseUser.uid,
                     email = firebaseUser.email ?: "",
@@ -183,6 +183,7 @@ class AuthRepositoryImpl @Inject constructor(
                     try {
                         when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
                             is Result.Success -> {
+                                // ✅ CORRECCIÓN CRÍTICA: usar result.data directamente (no nullable)
                                 trySend(AuthState.Success(result.data))
                             }
                             is Result.Error -> {
