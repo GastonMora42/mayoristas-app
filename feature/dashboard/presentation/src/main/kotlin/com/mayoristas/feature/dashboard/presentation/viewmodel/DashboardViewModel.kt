@@ -1,7 +1,13 @@
 // feature/dashboard/presentation/src/main/kotlin/com/mayoristas/feature/dashboard/presentation/viewmodel/DashboardViewModel.kt
 
+
 package com.mayoristas.feature.dashboard.presentation.viewmodel
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mayoristas.core.common.dispatcher.DispatcherProvider

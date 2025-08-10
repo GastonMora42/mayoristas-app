@@ -1,12 +1,12 @@
 // ✅ CORRECCIÓN PARA feature/auth/presentation/src/main/kotlin/com/mayoristas/feature/auth/presentation/screens/RegisterScreen.kt
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.mayoristas.feature.auth.presentation.screens
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -135,7 +135,6 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
     
-    // ✅ MÉTODO OBSERVEAUTHSTATE CORREGIDO
     override fun observeAuthState(): Flow<AuthState> = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
             val firebaseUser = auth.currentUser
@@ -156,7 +155,7 @@ class AuthRepositoryImpl @Inject constructor(
                     featuresEnabled = SubscriptionPlan.FREE.features
                 )
                 
-                // ✅ CREAR USER NO NULLABLE - CORRECCIÓN DE LÍNEA 121
+                // Crear usuario básico NO NULLABLE
                 val basicUser = User(
                     id = firebaseUser.uid,
                     email = firebaseUser.email ?: "",
@@ -173,8 +172,8 @@ class AuthRepositoryImpl @Inject constructor(
                     try {
                         when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
                             is Result.Success -> {
-                                // ✅ CORRECCIÓN CRÍTICA: Usar el usuario básico si result.data es null
-                                val userData = result.data ?: basicUser
+                                // IMPORTANTE: Usar basicUser si result.data es null
+                                val userData: User = result.data ?: basicUser
                                 trySend(AuthState.Success(userData))
                             }
                             is Result.Error -> {
@@ -188,7 +187,6 @@ class AuthRepositoryImpl @Inject constructor(
                         trySend(AuthState.Success(basicUser))
                     }
                 }
-                
             } else {
                 trySend(AuthState.Initial)
             }
