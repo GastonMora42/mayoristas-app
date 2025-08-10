@@ -10,7 +10,8 @@ import com.mayoristas.feature.auth.domain.repository.AuthRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -143,7 +144,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
     
-    // ✅ MÉTODO OBSERVEAUTHSTATE CORREGIDO COMPLETAMENTE
+    // ✅ MÉTODO OBSERVEAUTHSTATE COMPLETAMENTE CORREGIDO
     override fun observeAuthState(): Flow<AuthState> = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
             val firebaseUser = auth.currentUser
@@ -165,7 +166,7 @@ class AuthRepositoryImpl @Inject constructor(
                     featuresEnabled = SubscriptionPlan.FREE.features
                 )
                 
-                // ✅ CREAR USER NO NULLABLE - LÍNEA 120 CORREGIDA
+                // ✅ CREAR USER NO NULLABLE - CORREGIDO
                 val basicUser = User(
                     id = firebaseUser.uid,
                     email = firebaseUser.email ?: "",
@@ -177,9 +178,26 @@ class AuthRepositoryImpl @Inject constructor(
                     createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
                 )
                 
-                result.data?.let { user ->
-                    trySend(AuthState.Success(user))
-                } ?: trySend(AuthState.Error("Usuario no válido"))
+                // ✅ CORREGIDO: Obtener datos completos de Firestore usando GlobalScope
+                GlobalScope.launch {
+                    try {
+                        when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
+                            is Result.Success -> {
+                                trySend(AuthState.Success(result.data))
+                            }
+                            is Result.Error -> {
+                                // Si hay error obteniendo datos completos, usar usuario básico
+                                trySend(AuthState.Success(basicUser))
+                            }
+                            else -> {
+                                trySend(AuthState.Success(basicUser))
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // En caso de cualquier error, usar usuario básico
+                        trySend(AuthState.Success(basicUser))
+                    }
+                }
                 
             } else {
                 // Usuario no autenticado
