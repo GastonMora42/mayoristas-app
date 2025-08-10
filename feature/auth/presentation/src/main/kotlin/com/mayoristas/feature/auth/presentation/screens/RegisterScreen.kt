@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalFocusManager  // <-- IMPORTANTE: Este import
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -373,7 +373,7 @@ private fun UserTypeCard(
 private fun PersonalInfoSection(
     registerState: com.mayoristas.feature.auth.presentation.viewmodel.RegisterState,
     viewModel: AuthViewModel,
-    focusManager: androidx.compose.ui.platform.LocalFocusManager
+    focusManager: androidx.compose.ui.focus.FocusManager  // <-- Usar el tipo completo
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
@@ -463,7 +463,7 @@ private fun PersonalInfoSection(
 private fun BusinessInfoSection(
     registerState: com.mayoristas.feature.auth.presentation.viewmodel.RegisterState,
     viewModel: AuthViewModel,
-    focusManager: androidx.compose.ui.platform.LocalFocusManager
+    focusManager: androidx.compose.ui.focus.FocusManager  // <-- Usar el tipo completo
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(

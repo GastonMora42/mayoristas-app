@@ -118,11 +118,9 @@ class AuthRepositoryImpl @Inject constructor(
             if (userId != null && isBiometricEnabled) {
                 when (val result = getCurrentUser()) {
                     is Result.Success -> {
-                        if (result.data != null) {
-                            Result.Success(result.data)
-                        } else {
-                            Result.Error(Exception("Usuario no encontrado"))
-                        }
+                        result.data?.let { user ->
+                            Result.Success(user)
+                        } ?: Result.Error(Exception("Usuario no encontrado"))
                     }
                     is Result.Error -> result
                     else -> Result.Error(Exception("Error desconocido"))
