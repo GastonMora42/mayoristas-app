@@ -145,71 +145,81 @@ class AuthRepositoryImpl @Inject constructor(
     }
     
     // ✅ MÉTODO OBSERVEAUTHSTATE COMPLETAMENTE CORREGIDO
-    override fun observeAuthState(): Flow<AuthState> = callbackFlow {
-        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
-            val firebaseUser = auth.currentUser
-            if (firebaseUser != null) {
-                // Usuario autenticado - obtener datos completos
-                trySend(AuthState.Loading)
-                
-                // Crear suscripción por defecto
-                val defaultSubscription = UserSubscription(
-                    planType = SubscriptionPlan.FREE,
-                    startDate = System.currentTimeMillis(),
-                    endDate = System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000),
-                    isActive = true,
-                    autoRenew = false,
-                    paymentStatus = PaymentStatus.ACTIVE,
-                    mercadoPagoSubscriptionId = null,
-                    productsUsed = 0,
-                    productsLimit = SubscriptionPlan.FREE.productsLimit,
-                    featuresEnabled = SubscriptionPlan.FREE.features
-                )
-                
-                // ✅ CREAR USER NO NULLABLE - LÍNEA 121 CORREGIDA
-                val basicUser = User(
-                    id = firebaseUser.uid,
-                    email = firebaseUser.email ?: "",
-                    displayName = firebaseUser.displayName,
-                    userType = UserType.CLIENT,
-                    isVerified = firebaseUser.isEmailVerified,
-                    profile = null,
-                    subscription = defaultSubscription,
-                    createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
-                )
-                
-                // ✅ CORREGIDO: Obtener datos completos de Firestore usando GlobalScope
-                GlobalScope.launch {
-                    try {
-                        when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
-                            is Result.Success -> {
-                                // ✅ CORRECCIÓN CRÍTICA: usar result.data directamente (no nullable)
-                                trySend(AuthState.Success(result.data))
-                            }
-                            is Result.Error -> {
-                                // Si hay error obteniendo datos completos, usar usuario básico
-                                trySend(AuthState.Success(basicUser))
-                            }
-                            else -> {
+ // ✅ CORRECCIÓN PARA feature/auth/data/src/main/kotlin/com/mayoristas/feature/auth/data/repository/AuthRepositoryImpl.kt
+
+// Reemplazar el método observeAuthState() en la línea 121:
+
+override fun observeAuthState(): Flow<AuthState> = callbackFlow {
+    val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+        val firebaseUser = auth.currentUser
+        if (firebaseUser != null) {
+            // Usuario autenticado - obtener datos completos
+            trySend(AuthState.Loading)
+            
+            // Crear suscripción por defecto
+            val defaultSubscription = UserSubscription(
+                planType = SubscriptionPlan.FREE,
+                startDate = System.currentTimeMillis(),
+                endDate = System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000),
+                isActive = true,
+                autoRenew = false,
+                paymentStatus = PaymentStatus.ACTIVE,
+                mercadoPagoSubscriptionId = null,
+                productsUsed = 0,
+                productsLimit = SubscriptionPlan.FREE.productsLimit,
+                featuresEnabled = SubscriptionPlan.FREE.features
+            )
+            
+            // ✅ CREAR USER NO NULLABLE - LÍNEA 121 CORREGIDA
+            val basicUser = User(
+                id = firebaseUser.uid,
+                email = firebaseUser.email ?: "",
+                displayName = firebaseUser.displayName,
+                userType = UserType.CLIENT,
+                isVerified = firebaseUser.isEmailVerified,
+                profile = null,
+                subscription = defaultSubscription,
+                createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
+            )
+            
+            // ✅ CORREGIDO: Obtener datos completos de Firestore usando GlobalScope
+            GlobalScope.launch {
+                try {
+                    when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
+                        is Result.Success -> {
+                            // ✅ CORRECCIÓN CRÍTICA: verificar que result.data no sea null
+                            val userData = result.data
+                            if (userData != null) {
+                                trySend(AuthState.Success(userData))
+                            } else {
+                                // Si data es null, usar usuario básico
                                 trySend(AuthState.Success(basicUser))
                             }
                         }
-                    } catch (e: Exception) {
-                        // En caso de cualquier error, usar usuario básico
-                        trySend(AuthState.Success(basicUser))
+                        is Result.Error -> {
+                            // Si hay error obteniendo datos completos, usar usuario básico
+                            trySend(AuthState.Success(basicUser))
+                        }
+                        else -> {
+                            trySend(AuthState.Success(basicUser))
+                        }
                     }
+                } catch (e: Exception) {
+                    // En caso de cualquier error, usar usuario básico
+                    trySend(AuthState.Success(basicUser))
                 }
-                
-            } else {
-                // Usuario no autenticado
-                trySend(AuthState.Initial)
             }
-        }
-        
-        firebaseAuth.addAuthStateListener(authStateListener)
-        
-        awaitClose {
-            firebaseAuth.removeAuthStateListener(authStateListener)
+            
+        } else {
+            // Usuario no autenticado
+            trySend(AuthState.Initial)
         }
     }
+    
+    firebaseAuth.addAuthStateListener(authStateListener)
+    
+    awaitClose {
+        firebaseAuth.removeAuthStateListener(authStateListener)
+    }
+}
 }

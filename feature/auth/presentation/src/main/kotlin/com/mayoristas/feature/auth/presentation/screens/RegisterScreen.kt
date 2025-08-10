@@ -1,3 +1,4 @@
+// ✅ CORRECCIÓN PARA feature/auth/presentation/src/main/kotlin/com/mayoristas/feature/auth/presentation/screens/RegisterScreen.kt
 
 package com.mayoristas.feature.auth.presentation.screens
 
@@ -372,8 +373,8 @@ private fun UserTypeCard(
 private fun PersonalInfoSection(
     registerState: com.mayoristas.feature.auth.presentation.viewmodel.RegisterState,
     viewModel: AuthViewModel,
-    focusManager: androidx.compose.ui.platform
-    ) {
+    focusManager: androidx.compose.ui.platform.LocalFocusManager
+) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = "Información Personal",
@@ -462,8 +463,8 @@ private fun PersonalInfoSection(
 private fun BusinessInfoSection(
     registerState: com.mayoristas.feature.auth.presentation.viewmodel.RegisterState,
     viewModel: AuthViewModel,
-    focusManager: androidx.compose.ui.platform
-    ) {
+    focusManager: androidx.compose.ui.platform.LocalFocusManager
+) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = "Información Empresarial",

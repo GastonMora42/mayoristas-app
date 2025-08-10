@@ -45,7 +45,6 @@ import com.mayoristas.feature.auth.presentation.viewmodel.BusinessProfileViewMod
 import com.mayoristas.feature.auth.presentation.viewmodel.BusinessProfileState
 import com.mayoristas.feature.auth.presentation.viewmodel.BusinessProfileUIState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BusinessProfileScreen(
     onProfileCompleted: () -> Unit,
@@ -177,7 +176,6 @@ fun BusinessProfileScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileTopBar(
     title: String,
@@ -205,7 +203,7 @@ private fun ProfileTopBar(
         
         if (progress > 0) {
             LinearProgressIndicator(
-                progress = progress,
+                progress = { progress }, // ✅ Usar lambda para evitar API experimental
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.primary
             )
