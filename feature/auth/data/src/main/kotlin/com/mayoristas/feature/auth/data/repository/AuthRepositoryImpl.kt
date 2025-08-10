@@ -34,25 +34,19 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun register(credentials: RegisterCredentials): Result<User> {
         return firebaseAuthService.register(credentials).also { result ->
             if (result is Result.Success) {
-                // Guardamos la sesión pero el usuario necesita verificar email
                 tokenManager.saveUserSession(result.data.id)
             }
         }
     }
     
     override suspend fun loginWithGoogle(): Result<User> {
-        // TODO: Implementar con Google Sign-In SDK
         return Result.Error(Exception("Google Sign-In no implementado aún"))
     }
     
     override suspend fun logout(): Result<Unit> {
         return try {
-            // 1. Cerrar sesión en Firebase
             firebaseAuth.signOut()
-            
-            // 2. Limpiar tokens locales
             tokenManager.clearUserSession()
-            
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e)
@@ -63,10 +57,9 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val firebaseUser = firebaseAuth.currentUser
             if (firebaseUser != null) {
-                // Obtener datos completos del usuario desde Firestore
                 when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
                     is Result.Success -> Result.Success(result.data)
-                    is Result.Error -> Result.Success(null) // Si hay error, retornamos null
+                    is Result.Error -> Result.Success(null)
                     else -> Result.Success(null)
                 }
             } else {
@@ -119,12 +112,10 @@ class AuthRepositoryImpl @Inject constructor(
     
     override suspend fun loginWithBiometric(): Result<User> {
         return try {
-            // Verificar si hay un usuario guardado y biométrico habilitado
             val userId = tokenManager.getCurrentUserId()
             val isBiometricEnabled = tokenManager.isBiometricEnabled()
             
             if (userId != null && isBiometricEnabled) {
-                // Obtener datos del usuario actual
                 when (val result = getCurrentUser()) {
                     is Result.Success -> {
                         if (result.data != null) {
@@ -144,82 +135,69 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
     
-    // ✅ MÉTODO OBSERVEAUTHSTATE COMPLETAMENTE CORREGIDO
- // ✅ CORRECCIÓN PARA feature/auth/data/src/main/kotlin/com/mayoristas/feature/auth/data/repository/AuthRepositoryImpl.kt
-
-// Reemplazar el método observeAuthState() en la línea 121:
-
-override fun observeAuthState(): Flow<AuthState> = callbackFlow {
-    val authStateListener = FirebaseAuth.AuthStateListener { auth ->
-        val firebaseUser = auth.currentUser
-        if (firebaseUser != null) {
-            // Usuario autenticado - obtener datos completos
-            trySend(AuthState.Loading)
-            
-            // Crear suscripción por defecto
-            val defaultSubscription = UserSubscription(
-                planType = SubscriptionPlan.FREE,
-                startDate = System.currentTimeMillis(),
-                endDate = System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000),
-                isActive = true,
-                autoRenew = false,
-                paymentStatus = PaymentStatus.ACTIVE,
-                mercadoPagoSubscriptionId = null,
-                productsUsed = 0,
-                productsLimit = SubscriptionPlan.FREE.productsLimit,
-                featuresEnabled = SubscriptionPlan.FREE.features
-            )
-            
-            // ✅ CREAR USER NO NULLABLE - LÍNEA 121 CORREGIDA
-            val basicUser = User(
-                id = firebaseUser.uid,
-                email = firebaseUser.email ?: "",
-                displayName = firebaseUser.displayName,
-                userType = UserType.CLIENT,
-                isVerified = firebaseUser.isEmailVerified,
-                profile = null,
-                subscription = defaultSubscription,
-                createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
-            )
-            
-            // ✅ CORREGIDO: Obtener datos completos de Firestore usando GlobalScope
-            GlobalScope.launch {
-                try {
-                    when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
-                        is Result.Success -> {
-                            // ✅ CORRECCIÓN CRÍTICA: verificar que result.data no sea null
-                            val userData = result.data
-                            if (userData != null) {
+    // ✅ MÉTODO OBSERVEAUTHSTATE CORREGIDO
+    override fun observeAuthState(): Flow<AuthState> = callbackFlow {
+        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+            val firebaseUser = auth.currentUser
+            if (firebaseUser != null) {
+                trySend(AuthState.Loading)
+                
+                // Crear suscripción por defecto
+                val defaultSubscription = UserSubscription(
+                    planType = SubscriptionPlan.FREE,
+                    startDate = System.currentTimeMillis(),
+                    endDate = System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000),
+                    isActive = true,
+                    autoRenew = false,
+                    paymentStatus = PaymentStatus.ACTIVE,
+                    mercadoPagoSubscriptionId = null,
+                    productsUsed = 0,
+                    productsLimit = SubscriptionPlan.FREE.productsLimit,
+                    featuresEnabled = SubscriptionPlan.FREE.features
+                )
+                
+                // ✅ CREAR USER NO NULLABLE - CORRECCIÓN DE LÍNEA 121
+                val basicUser = User(
+                    id = firebaseUser.uid,
+                    email = firebaseUser.email ?: "",
+                    displayName = firebaseUser.displayName,
+                    userType = UserType.CLIENT,
+                    isVerified = firebaseUser.isEmailVerified,
+                    profile = null,
+                    subscription = defaultSubscription,
+                    createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
+                )
+                
+                // Obtener datos completos de Firestore
+                GlobalScope.launch {
+                    try {
+                        when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
+                            is Result.Success -> {
+                                // ✅ CORRECCIÓN CRÍTICA: Usar el usuario básico si result.data es null
+                                val userData = result.data ?: basicUser
                                 trySend(AuthState.Success(userData))
-                            } else {
-                                // Si data es null, usar usuario básico
+                            }
+                            is Result.Error -> {
+                                trySend(AuthState.Success(basicUser))
+                            }
+                            else -> {
                                 trySend(AuthState.Success(basicUser))
                             }
                         }
-                        is Result.Error -> {
-                            // Si hay error obteniendo datos completos, usar usuario básico
-                            trySend(AuthState.Success(basicUser))
-                        }
-                        else -> {
-                            trySend(AuthState.Success(basicUser))
-                        }
+                    } catch (e: Exception) {
+                        trySend(AuthState.Success(basicUser))
                     }
-                } catch (e: Exception) {
-                    // En caso de cualquier error, usar usuario básico
-                    trySend(AuthState.Success(basicUser))
                 }
+                
+            } else {
+                trySend(AuthState.Initial)
             }
-            
-        } else {
-            // Usuario no autenticado
-            trySend(AuthState.Initial)
+        }
+        
+        firebaseAuth.addAuthStateListener(authStateListener)
+        
+        awaitClose {
+            firebaseAuth.removeAuthStateListener(authStateListener)
         }
     }
-    
-    firebaseAuth.addAuthStateListener(authStateListener)
-    
-    awaitClose {
-        firebaseAuth.removeAuthStateListener(authStateListener)
-    }
-}
 }
