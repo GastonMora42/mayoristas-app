@@ -2,6 +2,7 @@
 
 package com.mayoristas.feature.auth.domain.model
 
+import android.util.Patterns
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
@@ -13,7 +14,7 @@ data class User(
     val userType: UserType,
     val isVerified: Boolean,
     val profile: UserProfile?,
-    val subscription: UserSubscription?,
+    val subscription: UserSubscription? = null, // ✅ Asegúrate de que tenga valor por defecto
     val createdAt: Long,
     val updatedAt: Long = System.currentTimeMillis()
 ) : Parcelable
@@ -243,15 +244,32 @@ fun ClothingCategory.getAllOptions(): List<String> {
 // Validation helpers
 object ProfileValidation {
     fun isValidCUIT(cuit: String): Boolean {
-        val cleanCuit = cuit.replace("-", "")
-        return cleanCuit.matches(Regex("\\d{11}")) && validateCUITChecksum(cleanCuit)
+        if (cuit.isBlank()) return false
+        
+        val cleanCuit = cuit.replace("-", "").replace(" ", "")
+        
+        // Verificar que tenga exactamente 11 dígitos
+        if (cleanCuit.length != 11) return false
+        
+        // Verificar que todos sean dígitos
+        if (!cleanCuit.all { it.isDigit() }) return false
+        
+        // Validar checksum
+        return validateCUITChecksum(cleanCuit)
     }
     
     private fun validateCUITChecksum(cuit: String): Boolean {
-        val weights = intArrayOf(5, 4, 3, 2, 7, 6, 5, 4, 3, 2)
-        val digits = cuit.map { it.toString().toInt() }
+        if (cuit.length != 11) return false
         
-        val sum = digits.take(10).zip(weights) { digit, weight -> 
+        val weights = listOf(5, 4, 3, 2, 7, 6, 5, 4, 3, 2)
+        
+        val digits = cuit.map { char -> 
+            char.toString().toIntOrNull() ?: return false 
+        }
+        
+        if (digits.size != 11) return false
+        
+        val sum = digits.take(10).zip(weights) { digit: Int, weight: Int -> 
             digit * weight 
         }.sum()
         
@@ -270,7 +288,8 @@ object ProfileValidation {
     }
     
     fun isValidBusinessEmail(email: String): Boolean {
-        return email.matches(Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) &&
+        val emailPattern = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
+        return email.matches(Regex(emailPattern)) &&
                !email.contains("gmail.com", ignoreCase = true) && // Preferir emails empresariales
                !email.contains("yahoo.com", ignoreCase = true) &&
                !email.contains("hotmail.com", ignoreCase = true)

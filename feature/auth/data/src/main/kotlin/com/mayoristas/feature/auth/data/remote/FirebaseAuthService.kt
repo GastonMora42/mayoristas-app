@@ -53,6 +53,20 @@ class FirebaseAuthService @Inject constructor(
             // Enviar email de verificación
             firebaseUser.sendEmailVerification().await()
             
+            // Crear suscripción gratuita por defecto
+            val defaultSubscription = UserSubscription(
+                planType = SubscriptionPlan.FREE,
+                startDate = System.currentTimeMillis(),
+                endDate = System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000), // 1 año
+                isActive = true,
+                autoRenew = false,
+                paymentStatus = PaymentStatus.ACTIVE,
+                mercadoPagoSubscriptionId = null,
+                productsUsed = 0,
+                productsLimit = SubscriptionPlan.FREE.productsLimit,
+                featuresEnabled = SubscriptionPlan.FREE.features
+            )
+            
             val user = User(
                 id = firebaseUser.uid,
                 email = firebaseUser.email ?: "",
@@ -60,6 +74,7 @@ class FirebaseAuthService @Inject constructor(
                 userType = credentials.userType,
                 isVerified = false,
                 profile = credentials.profile,
+                subscription = defaultSubscription, // ✅ Agregado
                 createdAt = System.currentTimeMillis()
             )
             
@@ -88,6 +103,20 @@ class FirebaseAuthService @Inject constructor(
             if (doc.exists()) {
                 val userProfileData = doc.toObject(UserProfileData::class.java)
                 
+                // Crear suscripción por defecto si no existe
+                val subscription = userProfileData?.subscription ?: UserSubscription(
+                    planType = SubscriptionPlan.FREE,
+                    startDate = System.currentTimeMillis(),
+                    endDate = System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000),
+                    isActive = true,
+                    autoRenew = false,
+                    paymentStatus = PaymentStatus.ACTIVE,
+                    mercadoPagoSubscriptionId = null,
+                    productsUsed = 0,
+                    productsLimit = SubscriptionPlan.FREE.productsLimit,
+                    featuresEnabled = SubscriptionPlan.FREE.features
+                )
+                
                 val user = User(
                     id = userId,
                     email = firebaseUser.email ?: "",
@@ -95,6 +124,7 @@ class FirebaseAuthService @Inject constructor(
                     userType = userProfileData?.userType ?: UserType.CLIENT,
                     isVerified = firebaseUser.isEmailVerified,
                     profile = userProfileData?.profile,
+                    subscription = subscription, // ✅ Agregado
                     createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
                 )
                 
@@ -136,6 +166,18 @@ class FirebaseAuthService @Inject constructor(
         val profileData = UserProfileData(
             userType = credentials.userType,
             profile = credentials.profile,
+            subscription = UserSubscription(
+                planType = SubscriptionPlan.FREE,
+                startDate = System.currentTimeMillis(),
+                endDate = System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000),
+                isActive = true,
+                autoRenew = false,
+                paymentStatus = PaymentStatus.ACTIVE,
+                mercadoPagoSubscriptionId = null,
+                productsUsed = 0,
+                productsLimit = SubscriptionPlan.FREE.productsLimit,
+                featuresEnabled = SubscriptionPlan.FREE.features
+            ),
             createdAt = System.currentTimeMillis(),
             updatedAt = System.currentTimeMillis()
         )
@@ -150,6 +192,7 @@ class FirebaseAuthService @Inject constructor(
 data class UserProfileData(
     val userType: UserType = UserType.CLIENT,
     val profile: UserProfile? = null,
+    val subscription: UserSubscription? = null, // ✅ Agregado
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
 )

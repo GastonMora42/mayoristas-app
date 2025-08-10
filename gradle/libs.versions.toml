@@ -59,7 +59,7 @@ okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor",
 
 # Security & Storage
 security-crypto = { group = "androidx.security", name = "security-crypto", version = "1.1.0-alpha06" }
-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version = "1.0.0" }
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version = "1.1.1" }
 
 # Biometric
 biometric = { group = "androidx.biometric", name = "biometric", version = "1.1.0" }
@@ -77,6 +77,7 @@ mockk = { group = "io.mockk", name = "mockk", version = "1.13.8" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }  # ✅ AGREGADO
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

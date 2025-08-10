@@ -16,7 +16,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Mayoristas"
 
-// ✅ Ahora incluimos todos los módulos para que Gradle pueda encontrarlos
+// ✅ Módulos principales
 include(":app")
 include(":core:common")
 include(":core:network") 
@@ -25,3 +25,8 @@ include(":core:ui")
 include(":feature:auth:domain")
 include(":feature:auth:data")
 include(":feature:auth:presentation")
+
+// ✅ Módulos de productos (crear temporalmente)
+include(":feature:products:domain")
+include(":feature:products:data")
+include(":feature:products:presentation")

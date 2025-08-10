@@ -63,7 +63,11 @@ class AuthRepositoryImpl @Inject constructor(
             val firebaseUser = firebaseAuth.currentUser
             if (firebaseUser != null) {
                 // Obtener datos completos del usuario desde Firestore
-                firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)
+                when (val result = firebaseAuthService.getCurrentUserFromFirestore(firebaseUser.uid)) {
+                    is Result.Success -> Result.Success(result.data)
+                    is Result.Error -> Result.Success(null) // Si hay error, retornamos null
+                    else -> Result.Success(null)
+                }
             } else {
                 Result.Success(null)
             }
@@ -120,7 +124,17 @@ class AuthRepositoryImpl @Inject constructor(
             
             if (userId != null && isBiometricEnabled) {
                 // Obtener datos del usuario actual
-                getCurrentUser()
+                when (val result = getCurrentUser()) {
+                    is Result.Success -> {
+                        if (result.data != null) {
+                            Result.Success(result.data)
+                        } else {
+                            Result.Error(Exception("Usuario no encontrado"))
+                        }
+                    }
+                    is Result.Error -> result
+                    else -> Result.Error(Exception("Error desconocido"))
+                }
             } else {
                 Result.Error(Exception("Autenticación biométrica no configurada"))
             }
@@ -136,8 +150,20 @@ class AuthRepositoryImpl @Inject constructor(
                 // Usuario autenticado - obtener datos completos
                 trySend(AuthState.Loading)
                 
-                // Aquí deberíamos obtener los datos completos del usuario
-                // Por simplicidad, creamos un usuario básico
+                // Crear usuario básico con suscripción por defecto
+                val defaultSubscription = UserSubscription(
+                    planType = SubscriptionPlan.FREE,
+                    startDate = System.currentTimeMillis(),
+                    endDate = System.currentTimeMillis() + (365L * 24 * 60 * 60 * 1000),
+                    isActive = true,
+                    autoRenew = false,
+                    paymentStatus = PaymentStatus.ACTIVE,
+                    mercadoPagoSubscriptionId = null,
+                    productsUsed = 0,
+                    productsLimit = SubscriptionPlan.FREE.productsLimit,
+                    featuresEnabled = SubscriptionPlan.FREE.features
+                )
+                
                 val basicUser = User(
                     id = user.uid,
                     email = user.email ?: "",
@@ -145,6 +171,7 @@ class AuthRepositoryImpl @Inject constructor(
                     userType = UserType.CLIENT, // Por defecto, se actualizará cuando obtengamos los datos reales
                     isVerified = user.isEmailVerified,
                     profile = null,
+                    subscription = defaultSubscription, // ✅ Agregado
                     createdAt = user.metadata?.creationTimestamp ?: 0L
                 )
                 trySend(AuthState.Success(basicUser))

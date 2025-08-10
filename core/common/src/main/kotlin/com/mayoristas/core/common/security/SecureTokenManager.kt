@@ -1,30 +1,37 @@
 package com.mayoristas.core.common.security
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKey
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private val Context.dataStore by preferencesDataStore("auth_prefs")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("auth_prefs")
 
 @Singleton
 class SecureTokenManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     
-    private val encryptedPrefs by lazy {
+    private val encryptedPrefs: SharedPreferences by lazy {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
         EncryptedSharedPreferences.create(
-            "secure_auth_prefs",
-            MasterKeys.AES256_GCM_SPEC,
             context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SBC,
+            "secure_auth_prefs",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }

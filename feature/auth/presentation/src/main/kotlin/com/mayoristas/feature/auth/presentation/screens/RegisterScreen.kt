@@ -556,8 +556,10 @@ private fun getBusinessTypeDisplayName(businessType: BusinessType): String {
     return when (businessType) {
         BusinessType.MANUFACTURER -> "Fabricante"
         BusinessType.DISTRIBUTOR -> "Distribuidor"
+        BusinessType.WHOLESALER -> "Mayorista"
         BusinessType.RETAILER -> "Minorista"
-        BusinessType.SERVICE_PROVIDER -> "Proveedor de Servicios"
+        BusinessType.AGENT -> "Representante/Agente"
+        BusinessType.IMPORTER -> "Importador"
     }
 }
 
