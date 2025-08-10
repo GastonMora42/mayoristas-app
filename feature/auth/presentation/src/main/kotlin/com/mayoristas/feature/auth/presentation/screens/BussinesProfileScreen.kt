@@ -1,7 +1,10 @@
 // feature/auth/presentation/src/main/kotlin/com/mayoristas/feature/auth/presentation/screens/BusinessProfileScreen.kt
 
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.mayoristas.feature.auth.presentation.screens
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -38,6 +41,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.mayoristas.feature.auth.domain.model.*
+import com.mayoristas.feature.auth.presentation.viewmodel.BusinessProfileViewModel
+import com.mayoristas.feature.auth.presentation.viewmodel.BusinessProfileState
+import com.mayoristas.feature.auth.presentation.viewmodel.BusinessProfileUIState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -221,7 +227,7 @@ private fun ProfileHeader() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                Icons.Default.Store,
+                Icons.Default.Storefront,
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
@@ -260,7 +266,7 @@ private fun BusinessInfoSection(
                 onValueChange = viewModel::onCompanyNameChanged,
                 label = { Text("Nombre del negocio *") },
                 placeholder = { Text("Ej: Mayorista Rosario SA") },
-                leadingIcon = { Icon(Icons.Default.Store, null) },
+                leadingIcon = { Icon(Icons.Default.Storefront, null) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = profileState.companyNameError != null,
                 supportingText = profileState.companyNameError?.let { { Text(it) } }
@@ -306,7 +312,7 @@ private fun BusinessInfoSection(
                 onValueChange = viewModel::onTaxIdChanged,
                 label = { Text("CUIT/CUIL *") },
                 placeholder = { Text("20-12345678-9") },
-                leadingIcon = { Icon(Icons.Default.Badge, null) },
+                leadingIcon = { Icon(Icons.Default.Assignment, null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
                 isError = profileState.taxIdError != null,
@@ -332,7 +338,7 @@ private fun BusinessInfoSection(
                     onValueChange = viewModel::onWhatsAppNumberChanged,
                     label = { Text("WhatsApp *") },
                     placeholder = { Text("1123456789") },
-                    leadingIcon = { Icon(Icons.Default.WhatsApp, null) },
+                    leadingIcon = { Icon(Icons.Default.Phone, null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     modifier = Modifier.weight(1f),
                     isError = profileState.whatsappError != null,
@@ -613,7 +619,7 @@ private fun SocialMediaSection(
                 onValueChange = viewModel::onInstagramChanged,
                 label = { Text("Instagram") },
                 placeholder = { Text("@tunegocio") },
-                leadingIcon = { Icon(Icons.Default.Camera, null) },
+                leadingIcon = { Icon(Icons.Default.PhotoCamera, null) },
                 modifier = Modifier.fillMaxWidth()
             )
             
@@ -622,7 +628,7 @@ private fun SocialMediaSection(
                 onValueChange = viewModel::onFacebookChanged,
                 label = { Text("Facebook") },
                 placeholder = { Text("facebook.com/tunegocio") },
-                leadingIcon = { Icon(Icons.Default.Facebook, null) },
+                leadingIcon = { Icon(Icons.Default.Share, null) },
                 modifier = Modifier.fillMaxWidth()
             )
             
@@ -631,7 +637,7 @@ private fun SocialMediaSection(
                 onValueChange = viewModel::onWebsiteChanged,
                 label = { Text("Página Web") },
                 placeholder = { Text("www.tunegocio.com") },
-                leadingIcon = { Icon(Icons.Default.Language, null) },
+                leadingIcon = { Icon(Icons.Default.Public, null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -745,12 +751,12 @@ private fun getBusinessTypeDisplayName(businessType: BusinessType): String {
 
 private fun getCategoryIcon(category: ClothingCategory): ImageVector {
     return when (category) {
-        ClothingCategory.WOMENS_CLOTHING -> Icons.Default.Woman
-        ClothingCategory.MENS_CLOTHING -> Icons.Default.Man
-        ClothingCategory.KIDS_CLOTHING -> Icons.Default.ChildCare
-        ClothingCategory.FOOTWEAR -> Icons.Default.SportsBaseball
-        ClothingCategory.ACCESSORIES -> Icons.Default.Watch
-        ClothingCategory.UNDERWEAR -> Icons.Default.Checkroom
+        ClothingCategory.WOMENS_CLOTHING -> Icons.Default.Person
+        ClothingCategory.MENS_CLOTHING -> Icons.Default.Person
+        ClothingCategory.KIDS_CLOTHING -> Icons.Default.ChildFriendly
+        ClothingCategory.FOOTWEAR -> Icons.Default.Sports
+        ClothingCategory.ACCESSORIES -> Icons.Default.AccessTime
+        ClothingCategory.UNDERWEAR -> Icons.Default.Storefront
         ClothingCategory.SPORTSWEAR -> Icons.Default.FitnessCenter
         ClothingCategory.WORKWEAR -> Icons.Default.Work
     }

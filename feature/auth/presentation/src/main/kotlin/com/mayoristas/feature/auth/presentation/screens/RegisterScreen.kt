@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.mayoristas.feature.auth.presentation.screens
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -371,7 +374,7 @@ private fun PersonalInfoSection(
     registerState: com.mayoristas.feature.auth.presentation.viewmodel.RegisterState,
     viewModel: AuthViewModel,
     focusManager: androidx.compose.ui.platform.FocusManager
-) {
+    ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = "Información Personal",
@@ -461,7 +464,7 @@ private fun BusinessInfoSection(
     registerState: com.mayoristas.feature.auth.presentation.viewmodel.RegisterState,
     viewModel: AuthViewModel,
     focusManager: androidx.compose.ui.platform.FocusManager
-) {
+    ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
             text = "Información Empresarial",

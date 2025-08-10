@@ -392,13 +392,22 @@ data class RegisterState(
     val password: String = "",
     val displayName: String = "",  
     val userType: UserType = UserType.CLIENT,
-    val profile: UserProfile = UserProfile(
-        companyName = null,
-        businessType = null,
-        taxId = null,
-        phoneNumber = null,
+    val profile = UserProfile(
+        companyName = companyName,
+        businessType = businessType,
+        taxId = taxId,
+        phoneNumber = phoneNumber,
+        whatsappNumber = null,           // ✅ Parámetro faltante
         address = null,
-        certifications = emptyList()
+        clothingCategories = emptyList(),
+        businessHours = null,            // ✅ Parámetro faltante
+        socialMedia = null,              // ✅ Parámetro faltante
+        businessPhotos = emptyList(),
+        description = null,              // ✅ Parámetro faltante
+        yearsInBusiness = null,          // ✅ Parámetro faltante
+        certifications = emptyList(),
+        minimumOrderValue = null,
+        deliveryOptions = emptyList()
     ),
     val emailError: String? = null,
     val passwordError: String? = null,
@@ -408,3 +417,4 @@ data class RegisterState(
     val isLoading: Boolean = false,
     val error: String? = null
 )
+

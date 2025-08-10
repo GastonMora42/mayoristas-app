@@ -143,14 +143,15 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
     
+    // ✅ MÉTODO OBSERVEAUTHSTATE CORREGIDO COMPLETAMENTE
     override fun observeAuthState(): Flow<AuthState> = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
-            val user = auth.currentUser
-            if (user != null) {
+            val firebaseUser = auth.currentUser
+            if (firebaseUser != null) {
                 // Usuario autenticado - obtener datos completos
                 trySend(AuthState.Loading)
                 
-                // Crear usuario básico con suscripción por defecto
+                // Crear suscripción por defecto
                 val defaultSubscription = UserSubscription(
                     planType = SubscriptionPlan.FREE,
                     startDate = System.currentTimeMillis(),
@@ -164,17 +165,22 @@ class AuthRepositoryImpl @Inject constructor(
                     featuresEnabled = SubscriptionPlan.FREE.features
                 )
                 
+                // ✅ CREAR USER NO NULLABLE - LÍNEA 120 CORREGIDA
                 val basicUser = User(
-                    id = user.uid,
-                    email = user.email ?: "",
-                    displayName = user.displayName,
-                    userType = UserType.CLIENT, // Por defecto, se actualizará cuando obtengamos los datos reales
-                    isVerified = user.isEmailVerified,
+                    id = firebaseUser.uid,
+                    email = firebaseUser.email ?: "",
+                    displayName = firebaseUser.displayName,
+                    userType = UserType.CLIENT,
+                    isVerified = firebaseUser.isEmailVerified,
                     profile = null,
-                    subscription = defaultSubscription, // ✅ Agregado
-                    createdAt = user.metadata?.creationTimestamp ?: 0L
+                    subscription = defaultSubscription,
+                    createdAt = firebaseUser.metadata?.creationTimestamp ?: 0L
                 )
-                trySend(AuthState.Success(basicUser))
+                
+                result.data?.let { user ->
+                    trySend(AuthState.Success(user))
+                } ?: trySend(AuthState.Error("Usuario no válido"))
+                
             } else {
                 // Usuario no autenticado
                 trySend(AuthState.Initial)
