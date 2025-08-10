@@ -1,4 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.mayoristas.feature.auth.presentation.screens
 
@@ -373,7 +372,7 @@ private fun UserTypeCard(
 private fun PersonalInfoSection(
     registerState: com.mayoristas.feature.auth.presentation.viewmodel.RegisterState,
     viewModel: AuthViewModel,
-    focusManager: androidx.compose.ui.platform.FocusManager
+    focusManager: androidx.compose.ui.platform
     ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
@@ -463,7 +462,7 @@ private fun PersonalInfoSection(
 private fun BusinessInfoSection(
     registerState: com.mayoristas.feature.auth.presentation.viewmodel.RegisterState,
     viewModel: AuthViewModel,
-    focusManager: androidx.compose.ui.platform.FocusManager
+    focusManager: androidx.compose.ui.platform
     ) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(

@@ -1,4 +1,4 @@
-// feature/products/data/build.gradle.kts
+// 1. Crear: feature/products/data/build.gradle.kts
 
 plugins {
     alias(libs.plugins.android.library)
